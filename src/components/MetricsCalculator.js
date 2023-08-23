@@ -1,27 +1,37 @@
 import React from 'react';
 
-const MetricsCalculator = ({ data }) => {
-  let TPH, availability, performance, quality, OEE;
-
-  try {
-    TPH = data.headCount !== 0 ? data.actualUnitsProduced / data.headCount : 0;
-    availability = data.actualRunTime / data.operationalTime || 0;
-    performance = data.expectedUnits !== 0 ? data.actualUnitsProduced / data.expectedUnits : 0;
-    quality = data.actualUnitsProduced !== 0 ? data.goodUnitsProduced / data.actualUnitsProduced : 0;
-    OEE = availability * performance * quality;
-  } catch (error) {
-    console.error("Error in calculations:", error);
+function MetricsCalculator({ hourlyData }) {
+  // Safety check for hourlyData
+  if (!hourlyData) {
+    return <div>No data provided.</div>;
   }
+
+  // Extracting values from hourlyData
+  const {
+    actualUnitsProduced,
+    headCount,
+    actualRunTime,
+    operationalTime,
+    expectedUnits,
+    goodUnitsProduced,
+  } = hourlyData;
+
+  // Calculations
+  const TPH = actualUnitsProduced / headCount || 0;
+  const availability = (actualRunTime / operationalTime) || 0;
+  const performance = (actualUnitsProduced / expectedUnits) || 0;
+  const quality = (goodUnitsProduced / actualUnitsProduced) || 0;
+  const OEE = availability * performance * quality;
 
   return (
     <div>
-      <p>TPH (Units per Person per Hour): {TPH}</p>
-      <p>Availability: {availability}</p>
-      <p>Performance: {performance}</p>
-      <p>Quality: {quality}</p>
-      <p>OEE: {OEE}</p>
+      <p>TPH: {TPH}</p>
+      <p>Availability: {availability * 100} %</p>
+      <p>Performance: {performance * 100} %</p>
+      <p>Quality: {quality * 100} %</p>
+      <p>OEE: {OEE * 100} %</p>
     </div>
   );
-};
+}
 
 export default MetricsCalculator;

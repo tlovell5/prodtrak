@@ -1,19 +1,34 @@
 import React from 'react';
 
-const ProductionLineSelector = ({ setProductionLine }) => {
-  const lines = [
-    'Sweet Line 1', 'Sweet Line 2', 'Non Allergen Mix', 'Allergen Mix', 
-    'Handfill 1', 'Handfill 2'
-  ];
+const lines = [
+  "Sweet Line 1", 
+  "Sweet Line 2", 
+  "Non Allergen Mix", 
+  "Allergen Mix", 
+  "Handfill 1", 
+  "Handfill 2"
+];
+
+function ProductionLineSelector({ onSelectLine }) {
+
+  const onChange = (event) => {
+    const selectedLine = event.target.value;
+    onSelectLine(selectedLine);
+  };
 
   return (
-    <select onChange={(e) => setProductionLine(e.target.value)}>
-      {lines.map((line, index) => (
-        <option key={index} value={line}>{line}</option>
-      ))}
-    </select>
+    <div>
+      <label>Select Production Line: </label>
+      <select onChange={onChange}>
+        <option value="">-- Select a line --</option>
+        {lines.map(line => (
+          <option key={line} value={line}>
+            {line}
+          </option>
+        ))}
+      </select>
+    </div>
   );
-};
+}
 
 export default ProductionLineSelector;
-
