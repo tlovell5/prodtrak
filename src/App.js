@@ -4,6 +4,7 @@ import { supabase } from './supabaseClient';
 function App() {
   const [formData, setFormData] = useState({
     date: null,
+    selectLine: "Sweetener Line 1",  // Set to default value
     sku: "",
     hour: "",
     operationalTime: null,
@@ -69,6 +70,7 @@ function App() {
       alert('Record saved!');
       setFormData({
         date: null,
+        selectLine: "Sweetener Line 1",  // Reset to default
         sku: "",
         hour: "",
         operationalTime: null,
@@ -94,6 +96,17 @@ function App() {
         <div>
           <label>Date:</label>
           <input type="date" name="date" value={formData.date || ''} onChange={handleChange} required />
+        </div>
+        <div>
+          <label>Select Line:</label>
+          <select name="selectLine" value={formData.selectLine} onChange={handleChange} required>
+            <option value="Sweetener Line 1">Sweetener Line 1</option>
+            <option value="Sweetener Line 2">Sweetener Line 2</option>
+            <option value="Non Allergen Mix">Non Allergen Mix</option>
+            <option value="Allergen Mix">Allergen Mix</option>
+            <option value="Handfill 1">Handfill 1</option>
+            <option value="Handfill 2">Handfill 2</option>
+          </select>
         </div>
         <div>
           <label>SKU:</label>
