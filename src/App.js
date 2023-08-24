@@ -19,9 +19,34 @@ function App() {
     setFormData(prev => ({ ...prev, [name]: value ? value : null }));
   };
 
+  const calculateMetrics = () => {
+    const actualRunTimeHours = formData.actualRunTime / 60;
+    const TPH = formData.actualUnitsProduced / actualRunTimeHours;
+    const Availability = formData.actualRunTime / formData.operationalTime;
+    const Performance = formData.actualUnitsProduced / formData.expectedUnits;
+    const Quality = formData.goodUnitsProduced / formData.actualUnitsProduced;
+    const OEE = Availability * Performance * Quality;
+
+    console.log('Metrics Calculated:', {
+      TPH, 
+      Availability, 
+      Performance, 
+      Quality, 
+      OEE
+    });
+    
+    return {
+      TPH,
+      Availability,
+      Performance,
+      Quality,
+      OEE
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const sanitizedData = Object.fromEntries(
       Object.entries(formData).map(([key, value]) => {
         if (["operationalTime", "actualRunTime", "headCount", "expectedUnits", "actualUnitsProduced", "goodUnitsProduced"].includes(key) && value) {
@@ -31,11 +56,14 @@ function App() {
       })
     );
     
-    console.log("Sending data to Supabase:", sanitizedData);
+    const metrics = calculateMetrics();
+    const dataToSend = { ...sanitizedData, ...metrics };
+
+    console.log("Sending data to Supabase:", dataToSend);
 
     const response = await supabase
-      .from('records') 
-      .insert([sanitizedData]);
+      .from('records')
+      .insert([dataToSend]);
 
     if (response.status >= 200 && response.status < 300) {
       alert('Record saved!');
