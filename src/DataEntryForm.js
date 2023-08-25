@@ -1,6 +1,17 @@
 import React from "react";
 
 function DataEntryForm({ formData, handleChange, handleSubmit }) {
+  const hourOptions = [
+    "09:00 - 10:00",
+    "10:00 - 11:00",
+    "11:00 - 12:00",
+    "12:00 - 13:00",
+    "13:00 - 14:00",
+    "14:00 - 15:00",
+    "15:00 - 16:00",
+    "16:00 - 17:00",
+  ];
+
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -44,13 +55,19 @@ function DataEntryForm({ formData, handleChange, handleSubmit }) {
 
       <div>
         <label>Hour:</label>
-        <input
-          type="text"
+        <select
           name="hour"
           value={formData.hour}
           onChange={handleChange}
           required
-        />
+        >
+          <option value="">Select an Hour</option>
+          {hourOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
