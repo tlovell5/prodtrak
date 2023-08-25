@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { supabase } from './supabaseClient';
+import React, { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient";
+import Sidebar from "./Sidebar";
+import DataEntryForm from "./DataEntryForm";
+import DataTables from "./DataTables";
+import "./App.css";
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("Data Entry");
+
+  // New state for storing fetched records
+  const [records, setRecords] = useState([]);
+
   const [formData, setFormData] = useState({
     date: null,
-    selectLine: "Sweetener Line 1",  // Set to default value
+    selectLine: "",
     sku: "",
     hour: "",
     operationalTime: null,
@@ -12,12 +21,12 @@ function App() {
     headCount: null,
     expectedUnits: null,
     actualUnitsProduced: null,
-    goodUnitsProduced: null
+    goodUnitsProduced: null,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value ? value : null }));
+    setFormData((prev) => ({ ...prev, [name]: value ? value : null }));
   };
 
   const calculateMetrics = () => {
@@ -28,20 +37,12 @@ function App() {
     const Quality = formData.goodUnitsProduced / formData.actualUnitsProduced;
     const OEE = Availability * Performance * Quality;
 
-    console.log('Metrics Calculated:', {
-      TPH, 
-      Availability, 
-      Performance, 
-      Quality, 
-      OEE
-    });
-    
     return {
       TPH,
       Availability,
       Performance,
       Quality,
-      OEE
+      OEE,
     };
   };
 
@@ -50,27 +51,32 @@ function App() {
 
     const sanitizedData = Object.fromEntries(
       Object.entries(formData).map(([key, value]) => {
-        if (["operationalTime", "actualRunTime", "headCount", "expectedUnits", "actualUnitsProduced", "goodUnitsProduced"].includes(key) && value) {
+        if (
+          [
+            "operationalTime",
+            "actualRunTime",
+            "headCount",
+            "expectedUnits",
+            "actualUnitsProduced",
+            "goodUnitsProduced",
+          ].includes(key) &&
+          value
+        ) {
           return [key, parseInt(value, 10)];
         }
         return [key, value === "" ? null : value];
       })
     );
-    
+
     const metrics = calculateMetrics();
     const dataToSend = { ...sanitizedData, ...metrics };
 
-    console.log("Sending data to Supabase:", dataToSend);
-
-    const response = await supabase
-      .from('records')
-      .insert([dataToSend]);
+    const response = await supabase.from("records").insert([dataToSend]);
 
     if (response.status >= 200 && response.status < 300) {
-      alert('Record saved!');
+      alert("Record saved!");
       setFormData({
         date: null,
-        selectLine: "Sweetener Line 1",  // Reset to default
         sku: "",
         hour: "",
         operationalTime: null,
@@ -78,70 +84,50 @@ function App() {
         headCount: null,
         expectedUnits: null,
         actualUnitsProduced: null,
-        goodUnitsProduced: null
+        goodUnitsProduced: null,
       });
     } else if (response.error) {
-      console.error("Supabase Error:", response.error);
-      alert('Error saving record: ' + response.error.message);
+      alert("Error saving record: " + response.error.message);
     } else {
-      console.error("Unknown error or response:", response);
-      alert('Unknown error occurred.');
+      alert("Unknown error occurred.");
     }
   };
 
+  // Function to fetch records for the DataTables page
+  const fetchRecords = async () => {
+    const { data, error } = await supabase.from("records").select("*");
+    if (data) {
+      setRecords(data);
+    } else if (error) {
+      console.error("Error fetching records:", error);
+      alert("Error fetching records: " + error.message);
+    }
+  };
+
+  // UseEffect to fetch records when DataTables page is active
+  useEffect(() => {
+    if (currentPage === "Data Tables") {
+      fetchRecords();
+    }
+  }, [currentPage]);
+
   return (
     <div className="App">
-      <h1>ProdTrak Entry</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Date:</label>
-          <input type="date" name="date" value={formData.date || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Select Line:</label>
-          <select name="selectLine" value={formData.selectLine} onChange={handleChange} required>
-            <option value="Sweetener Line 1">Sweetener Line 1</option>
-            <option value="Sweetener Line 2">Sweetener Line 2</option>
-            <option value="Non Allergen Mix">Non Allergen Mix</option>
-            <option value="Allergen Mix">Allergen Mix</option>
-            <option value="Handfill 1">Handfill 1</option>
-            <option value="Handfill 2">Handfill 2</option>
-          </select>
-        </div>
-        <div>
-          <label>SKU:</label>
-          <input type="text" name="sku" value={formData.sku} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Hour:</label>
-          <input type="text" name="hour" value={formData.hour} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Operational Time (mins):</label>
-          <input type="number" name="operationalTime" value={formData.operationalTime || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Actual Run Time (mins):</label>
-          <input type="number" name="actualRunTime" value={formData.actualRunTime || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Head Count:</label>
-          <input type="number" name="headCount" value={formData.headCount || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Expected Units:</label>
-          <input type="number" name="expectedUnits" value={formData.expectedUnits || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Actual Units Produced:</label>
-          <input type="number" name="actualUnitsProduced" value={formData.actualUnitsProduced || ''} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Good Units Produced:</label>
-          <input type="number" name="goodUnitsProduced" value={formData.goodUnitsProduced || ''} onChange={handleChange} required />
-        </div>
-        <button type="submit">Save Record</button>
-      </form>
+      <Sidebar setCurrentPage={setCurrentPage} />
+
+      <div className="content">
+        {currentPage === "Data Entry" && (
+          <>
+            <h1>ProdTrak Entry</h1>
+            <DataEntryForm
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+            />
+          </>
+        )}
+        {currentPage === "Data Tables" && <DataTables records={records} />}
+      </div>
     </div>
   );
 }
