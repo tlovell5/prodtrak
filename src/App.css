@@ -1,84 +1,96 @@
+/* Global Styling */
+body {
+  background-color: #F7F7F7; /* Light Grey as the primary background color */
+  color: #333333; /* Dark Grey for most of the text */
+}
+
 .App {
-  display: flex;
-  height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
+display: grid;
+grid-template-columns: 200px 1fr; 
+height: 100vh;
+font-family: Arial, Helvetica, sans-serif;
 }
 
 .sidebar {
-  min-width: 200px;
-  border-right: 1px solid #ddd;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  background-color: #f7f7f7;
+border-right: 1px solid #ddd;
+padding: 20px;
+box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+background-color: #F7F7F7; /* Light Grey background for sidebar */
 }
 
 .sidebar ul {
-  list-style-type: none;
-  padding: 0;
+list-style-type: none;
+padding: 0;
 }
 
 .sidebar li {
-  padding: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background-color 0.2s;
+padding: 10px;
+border-radius: 4px;
+cursor: pointer;
+margin-bottom: 8px;
+transition: background-color 0.2s;
+color: #7D7D7D; /* Light Grey for secondary text */
 }
 
 .sidebar li:hover {
-  background-color: #e0e0e0;
+background-color: #e0e0e0;
 }
 
 .content {
-  flex-grow: 1;
-  padding: 20px;
+padding: 20px;
 }
 
 form {
-  max-width: 400px;
-  margin: 0 auto;
+max-width: 400px;
+margin: 0 auto;
 }
 
 form div {
-  margin-bottom: 12px;
+margin-bottom: 12px;
 }
 
 label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
+display: block;
+margin-bottom: 6px;
+font-weight: bold;
+color: #333333; /* Dark Grey for labels */
 }
 
 input[type="text"], 
 input[type="date"], 
 input[type="number"], 
 select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+width: 100%;
+padding: 8px;
+box-sizing: border-box;
+border: 1px solid #ddd;
+border-radius: 4px;
 }
 
 button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+padding: 10px 15px;
+border: none;
+background-color: #007BFF; /* Primary Blue for buttons */
+color: white;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.2s;
 }
 
 button:hover {
-  background-color: #0056b3;
+background-color: #0056b3;
 }
 
-/* Styling for DataTables component */
+/* DataTables component styling */
 table {
   width: 100%;
+  max-width: 100%; /* ensure the table doesn't overflow its parent */
   border-collapse: collapse;
   margin-top: 20px;
+  table-layout: fixed; /* Use a fixed table layout */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  display: block; /* Block element to allow for scrolling */
+  font-size: 0.9rem; /* Reduce the font size slightly */
 }
 
 table, th, td {
@@ -86,8 +98,11 @@ table, th, td {
 }
 
 th, td {
-  padding: 8px 12px;
+  padding: 6px 10px; /* Slightly reduced padding */
   text-align: left;
+  overflow: hidden; /* Hide overflowed content */
+  text-overflow: ellipsis; /* Add an ellipsis (...) for overflowed content */
+  white-space: nowrap; /* Prevent content from wrapping to the next line */
 }
 
 th {
@@ -100,4 +115,35 @@ tr:nth-child(even) {
 
 tr:hover {
   background-color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) { 
+  .App {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar, .content {
+    width: 100%;
+  }
+
+  form {
+    max-width: 100%;
+  }
+  
+  table {
+    font-size: 0.8rem; /* Further reduce the font size on smaller screens */
+  }
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;  /* Center the content horizontally */
+  align-items: center;      /* Center the content vertically */
+  margin-bottom: 20px;      /* Provide some space below the logo */
+}
+
+.sidebar-logo {
+  max-width: 80%;         /* You can adjust this based on how big you want the logo to be */
+  height: auto;           /* Maintain the image aspect ratio */
 }
